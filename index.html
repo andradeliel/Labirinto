@@ -60,6 +60,26 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby2Fwg3v2u4aP013wNeOpRdgbGoT8_I1-k3wXM38ZfydOXMw9j02Qjtj9lqIHZwp8Px/exec";
+
+async function enviarNome(nome) {
+  try {
+    await fetch(WEB_APP_URL, {
+      method: "POST",
+      body: JSON.stringify({ nome: nome }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+
+    document.getElementById("message").textContent =
+      "✅ Nome enviado com sucesso!";
+  } catch (err) {
+    document.getElementById("message").textContent =
+      "❌ Erro ao enviar.";
+  }
+}
+
 const tileSize = 40;
 
 
@@ -141,10 +161,16 @@ function draw() {
 }
 
 function checkVictory() {
-    if (ship.x === goal.x && ship.y === goal.y) {
-        document.getElementById("message").textContent = "🚀 Vitória! Algoritmo correto!";
-        clearInterval(execution);
+  if (ship.x === goal.x && ship.y === goal.y) {
+
+    clearInterval(execution);
+
+    const nome = prompt("🚀 Vitória! Digite seu nome:");
+
+    if (nome && nome.trim() !== "") {
+      enviarNome(nome.trim());
     }
+  }
 }
 
 function moveForward() {
@@ -231,3 +257,4 @@ draw();
 
 </body>
 </html>
+
