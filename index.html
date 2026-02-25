@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labirinto da Nave</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background: #111;
+        color: white;
+    }
+
+    canvas {
+        background: #222;
+        margin-top: 20px;
+        border: 2px solid white;
+    }
+
+    textarea {
+        width: 300px;
+        height: 60px;
+        margin-top: 15px;
+        font-size: 16px;
+        text-transform: uppercase;
+    }
+
+    button {
+        margin: 5px;
+        padding: 8px 20px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    #message {
+        margin-top: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        height: 24px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Simulador de Algoritmo - Nave</h2>
+
+<canvas id="game" width="400" height="400"></canvas>
+
+<br>
+<textarea id="commands" placeholder="Digite comandos: A E D"></textarea>
+<br>
+<button onclick="runCommands()">Executar</button>
+<button onclick="resetGame()">Resetar</button>
+
+<div id="message"></div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const tileSize = 40;
+const rows = 10;
+const cols = 10;
+
+const maze = [
+[0,0,0,0,0,0,0,1,0,0],
+[0,1,1,1,0,1,1,1,1,0],
+[0,0,0,1,0,0,0,0,1,0],
+[1,1,0,1,1,1,1,0,1,0],
+[0,0,0,0,0,0,1,0,0,0],
+[0,1,1,1,1,0,1,1,1,0],
+[0,0,0,0,1,0,1,0,1,0],
+[0,1,1,0,1,1,1,0,1,0],
+[0,0,0,0,0,0,0,0,1,0],
+[0,1,1,1,1,1,1,0,0,0]
+];
+
+const goal = { x: 9, y: 9 };
+
+let ship;
+let execution;
+
+function initShip() {
+    ship = {
+        x: 0,
+        y: 0,
+        direction: 1 // 0=N,1=E,2=S,3=W
+    };
+}
+
+function drawMaze() {
+    for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+            if (maze[y][x] === 1) {
+                ctx.fillStyle = "#555";
+                ctx.fillRect(x*tileSize, y*tileSize, tileSize, tileSize);
+            } else {
+                ctx.strokeStyle = "#333";
+                ctx.strokeRect(x*tileSize, y*tileSize, tileSize, tileSize);
+            }
+        }
+    }
+}
+
+function drawGoal() {
+    ctx.fillStyle = "lime";
+    ctx.fillRect(goal.x*tileSize, goal.y*tileSize, tileSize, tileSize);
+}
+
+function drawShip() {
+    const centerX = ship.x*tileSize + tileSize/2;
+    const centerY = ship.y*tileSize + tileSize/2;
+
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    ctx.rotate(ship.direction * Math.PI/2);
+
+    ctx.fillStyle = "cyan";
+    ctx.beginPath();
+    ctx.moveTo(0, -tileSize/3);
+    ctx.lineTo(tileSize/4, tileSize/3);
+    ctx.lineTo(-tileSize/4, tileSize/3);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    drawMaze();
+    drawGoal();
+    drawShip();
+}
+
+function checkVictory() {
+    if (ship.x === goal.x && ship.y === goal.y) {
+        document.getElementById("message").textContent = "🚀 Vitória! Algoritmo correto!";
+        clearInterval(execution);
+    }
+}
+
+function moveForward() {
+    let nx = ship.x;
+    let ny = ship.y;
+
+    if (ship.direction === 0) ny--;
+    if (ship.direction === 1) nx++;
+    if (ship.direction === 2) ny++;
+    if (ship.direction === 3) nx--;
+
+    if (
+        nx >= 0 && nx < cols &&
+        ny >= 0 && ny < rows &&
+        maze[ny][nx] === 0
+    ) {
+        ship.x = nx;
+        ship.y = ny;
+        checkVictory();
+    } else {
+        document.getElementById("message").textContent = "💥 Bateu na parede!";
+        clearInterval(execution);
+    }
+}
+
+function turnLeft() {
+    ship.direction = (ship.direction + 3) % 4;
+}
+
+function turnRight() {
+    ship.direction = (ship.direction + 1) % 4;
+}
+
+function runCommands() {
+    document.getElementById("message").textContent = "";
+    let input = document.getElementById("commands").value;
+    let commands = input.replace(/\s/g,'').split('');
+    let i = 0;
+
+    clearInterval(execution);
+
+    execution = setInterval(() => {
+        if (i >= commands.length) {
+            clearInterval(execution);
+            return;
+        }
+
+        let cmd = commands[i];
+
+        if (cmd === 'A') moveForward();
+        if (cmd === 'E') turnLeft();
+        if (cmd === 'D') turnRight();
+
+        draw();
+        i++;
+
+    }, 500);
+}
+
+function resetGame() {
+    clearInterval(execution);
+    initShip();
+    document.getElementById("message").textContent = "";
+    draw();
+}
+
+initShip();
+draw();
+</script>
+
+</body>
+</html>
