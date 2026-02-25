@@ -175,7 +175,10 @@ function turnRight() {
 
 function runCommands() {
     document.getElementById("message").textContent = "";
-    let input = document.getElementById("commands").value.toUpperCase();
+
+    let rawInput = document.getElementById("commands").value;
+    let input = rawInput.toUpperCase();
+    
     let commands = input.replace(/\s/g,'').split('');
     let i = 0;
 
@@ -213,4 +216,5 @@ draw();
 </body>
 
 </html>
+
 
