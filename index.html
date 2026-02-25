@@ -60,13 +60,23 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzH1nmi10XY6iFyDOCGtHbm6h1qs7NBaM93YkbTpWuVDMImGr6accd9eOPkVyMlsvF4Tg/exec";
+let totalSteps = 0;
+let totalSubmissions = 0;
+
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwzuJPUW1FC4Ac6tnrgMuD0MS-ho9KcHWScSZc7hp8tiItvgplR7ooZ5gvzy02ARvF1cA/exec";
 
 async function enviarNome(nome) {
   try {
+  
+	let data = {
+	  nome: nome,
+	  passos: totalSteps,
+	  conjuntos: totalSubmissions
+	};
+	
     const response = await fetch(WEB_APP_URL, {
       method: "POST",
-      body: JSON.stringify({ nome: nome })
+      body: JSON.stringify(data)
     });
 
     const result = await response.json();
@@ -90,17 +100,16 @@ const tileSize = 40;
 
 
 const maze = [
-[0,0,0]
-//[0,0,0,0,0,0,0,1,0,0],
-//[0,1,1,1,0,1,1,1,1,0],
-//[0,0,0,1,0,0,0,0,1,0],
-//[1,1,0,1,1,1,1,0,1,0],
-//[0,0,0,0,0,0,1,0,0,0],
-//[0,1,1,1,1,0,1,1,1,0],
-//[0,0,0,0,1,0,1,0,1,0],
-//[0,1,1,0,1,1,1,0,1,0],
-//[0,0,0,0,0,0,0,0,1,0],
-//[0,1,1,1,1,1,1,0,0,0]
+[0,0,0,0,0,0,0,1,0,0],
+[0,1,1,1,0,1,1,1,1,0],
+[0,0,0,1,0,0,0,0,1,0],
+[1,1,0,1,1,1,1,0,1,0],
+[0,0,0,0,0,0,1,0,0,0],
+[0,1,1,1,1,0,1,1,1,0],
+[0,0,0,0,1,0,1,0,1,0],
+[0,1,1,0,1,1,1,0,1,0],
+[0,0,0,0,0,0,0,0,1,0],
+[0,1,1,1,1,1,1,0,0,0]
 ];
 
 const rows = maze.length;
@@ -113,6 +122,7 @@ const goal = { x: cols - 1, y: rows - 1 };
 
 let ship;
 let execution;
+
 
 function initShip() {
     ship = {
@@ -217,6 +227,11 @@ function runCommands() {
     let rawInput = document.getElementById("commands").value;
     let input = rawInput.toUpperCase();
     let commands = input.replace(/[^AED]/g, '').split('');
+	
+	if(commands.length > 0){
+	   totalSubmissions++;
+	   totalSteps += input.length;
+	}
 
     if (commands.length === 0) {
         document.getElementById("message").textContent = "⚠️ Use apenas A, E ou D.";
@@ -248,6 +263,8 @@ function runCommands() {
 function resetGame() {
     clearInterval(execution);
     initShip();
+	totalSubmissions = 0;
+	totalSteps = 0;
     document.getElementById("message").textContent = "";
     draw();
 }
