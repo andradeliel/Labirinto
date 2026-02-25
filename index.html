@@ -60,23 +60,29 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby2Fwg3v2u4aP013wNeOpRdgbGoT8_I1-k3wXM38ZfydOXMw9j02Qjtj9lqIHZwp8Px/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzH1nmi10XY6iFyDOCGtHbm6h1qs7NBaM93YkbTpWuVDMImGr6accd9eOPkVyMlsvF4Tg/exec";
 
 async function enviarNome(nome) {
   try {
-    await fetch(WEB_APP_URL, {
+    const response = await fetch(WEB_APP_URL, {
       method: "POST",
-      body: JSON.stringify({ nome: nome }),
-      headers: {
-        "Content-Type": "application/json"
-      }
+      body: JSON.stringify({ nome: nome })
     });
 
-    document.getElementById("message").textContent =
-      "✅ Nome enviado com sucesso!";
+    const result = await response.json();
+
+    if (result.status === "ok") {
+      document.getElementById("message").textContent =
+        "✅ Nome enviado com sucesso!";
+    } else {
+      document.getElementById("message").textContent =
+        "❌ Erro inesperado.";
+    }
+
   } catch (err) {
     document.getElementById("message").textContent =
-      "❌ Erro ao enviar.";
+      "❌ Falha na conexão.";
+    console.error(err);
   }
 }
 
@@ -84,16 +90,17 @@ const tileSize = 40;
 
 
 const maze = [
-[0,0,0,0,0,0,0,1,0,0],
-[0,1,1,1,0,1,1,1,1,0],
-[0,0,0,1,0,0,0,0,1,0],
-[1,1,0,1,1,1,1,0,1,0],
-[0,0,0,0,0,0,1,0,0,0],
-[0,1,1,1,1,0,1,1,1,0],
-[0,0,0,0,1,0,1,0,1,0],
-[0,1,1,0,1,1,1,0,1,0],
-[0,0,0,0,0,0,0,0,1,0],
-[0,1,1,1,1,1,1,0,0,0]
+[0,0,0]
+//[0,0,0,0,0,0,0,1,0,0],
+//[0,1,1,1,0,1,1,1,1,0],
+//[0,0,0,1,0,0,0,0,1,0],
+//[1,1,0,1,1,1,1,0,1,0],
+//[0,0,0,0,0,0,1,0,0,0],
+//[0,1,1,1,1,0,1,1,1,0],
+//[0,0,0,0,1,0,1,0,1,0],
+//[0,1,1,0,1,1,1,0,1,0],
+//[0,0,0,0,0,0,0,0,1,0],
+//[0,1,1,1,1,1,1,0,0,0]
 ];
 
 const rows = maze.length;
@@ -257,4 +264,3 @@ draw();
 
 </body>
 </html>
-
