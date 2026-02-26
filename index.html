@@ -112,6 +112,7 @@ async function enviarNome(nome) {
     if (result.status === "ok") {
       document.getElementById("message").textContent =
         "✅ Nome enviado com sucesso!";
+		carregarRanking();
     } else {
       document.getElementById("message").textContent =
         "❌ Erro inesperado.";
@@ -215,8 +216,6 @@ function checkVictory() {
     if (nome && nome.trim() !== "") {
       enviarNome(nome.trim());
     }
-	
-	carregarRanking();
   }
 }
 
@@ -342,3 +341,4 @@ draw();
 
 </body>
 </html>
+
