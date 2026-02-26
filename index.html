@@ -40,6 +40,18 @@
         font-weight: bold;
         height: 24px;
     }
+	
+	#rankingContainer {
+	  display: flex;
+	  justify-content: center;
+	  margin-top: 20px;
+	}
+
+	#rankingContainer table {
+	  border-collapse: collapse;
+	  min-width: 400px;
+	}
+	
 </style>
 </head>
 <body>
@@ -56,19 +68,21 @@
 
 <div id="message"></div>
 
-<h2>Ranking do Dia</h2>
+<h2 style="text-align:center;">Ranking do Dia</h2>
 
-<table border="1">
-  <thead>
-    <tr>
-      <th>Posição</th>
-      <th>Nome</th>
-      <th>Passos</th>
-      <th>Conjuntos</th>
-    </tr>
-  </thead>
-  <tbody id="rankingBody"></tbody>
-</table>
+<div id="rankingContainer">
+  <table border="1">
+    <thead>
+      <tr>
+        <th>º</th>
+        <th>Nome</th>
+        <th>Passos</th>
+        <th>Conjuntos</th>
+      </tr>
+    </thead>
+    <tbody id="rankingBody"></tbody>
+  </table>
+</div>
 
 <script>
 const canvas = document.getElementById("game");
@@ -118,7 +132,7 @@ const maze = [
 [0,1,1,1,0,1,1,1,1,0],
 [0,0,0,1,0,0,0,0,1,0],
 [1,1,0,1,1,1,1,0,1,0],
-[0,0,0,0,0,0,1,0,0,0],
+[0,0,0,0,0,0,1,0,1,0],
 [0,1,1,1,1,0,1,1,1,0],
 [0,0,0,0,1,0,1,0,1,0],
 [0,1,1,0,1,1,1,0,1,0],
@@ -201,6 +215,8 @@ function checkVictory() {
     if (nome && nome.trim() !== "") {
       enviarNome(nome.trim());
     }
+	
+	carregarRanking();
   }
 }
 
