@@ -78,6 +78,7 @@
         <th>Nome</th>
         <th>Passos</th>
         <th>Conjuntos</th>
+		<th>Escola</th>
       </tr>
     </thead>
     <tbody id="rankingBody"></tbody>
@@ -90,8 +91,19 @@ const ctx = canvas.getContext("2d");
 
 let totalSteps = 0;
 let totalSubmissions = 0;
+let escola;
 
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxnAnaX40UgNuDB_rdx6hxWwCeU9dcXAhYtVa_fnHz3erspR6AItXc4o52id6NyGN6N3g/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwldQViwZ609YbAZOZgTXURUmLiWFCmw9i0bDxSqr1l9tSpZvfaRG1F2u-wlU37_HAR8g/exec";
+const params = new URLSearchParams(window.location.search);
+const paramEscola = params.get("ec");
+
+if (paramEscola === "m") {
+	escola = "Maria Leite";
+} else if (paramEscola === "g") {
+	escola = "Gonçala";
+} else if (paramEscola === "p") {
+	escola = "JBBA";
+}
 
 async function enviarNome(nome) {
   try {
@@ -99,7 +111,8 @@ async function enviarNome(nome) {
 	let data = {
 	  nome: nome,
 	  passos: totalSteps,
-	  conjuntos: totalSubmissions
+	  conjuntos: totalSubmissions,
+	  escola: escola
 	};
 	
     const response = await fetch(WEB_APP_URL, {
@@ -112,7 +125,6 @@ async function enviarNome(nome) {
     if (result.status === "ok") {
       document.getElementById("message").textContent =
         "✅ Nome enviado com sucesso!";
-		carregarRanking();
     } else {
       document.getElementById("message").textContent =
         "❌ Erro inesperado.";
@@ -129,16 +141,18 @@ const tileSize = 40;
 
 
 const maze = [
-[0,0,0,0,0,0,0,1,0,0],
-[0,1,1,1,0,1,1,1,1,0],
-[0,0,0,1,0,0,0,0,1,0],
-[1,1,0,1,1,1,1,0,1,0],
-[0,0,0,0,0,0,1,0,1,0],
-[0,1,1,1,1,0,1,1,1,0],
-[0,0,0,0,1,0,1,0,1,0],
-[0,1,1,0,1,1,1,0,1,0],
-[0,0,0,0,0,0,0,0,1,0],
-[0,1,1,1,1,1,1,0,0,0]
+[0,1,0,0,0,1,0,0,0,1,0,0],
+[0,1,0,1,0,1,0,1,0,1,0,1],
+[0,0,0,1,0,0,0,1,0,0,0,1],
+[1,1,0,1,1,1,0,1,1,1,0,1],
+[0,0,0,0,0,1,0,0,0,1,0,0],
+[0,1,1,1,0,1,1,1,0,1,1,0],
+[0,1,0,0,0,0,0,1,0,0,0,0],
+[0,1,0,1,1,1,0,1,1,1,1,0],
+[0,0,0,1,0,0,0,0,0,0,1,0],
+[1,1,0,1,0,1,1,1,1,0,1,0],
+[0,0,0,0,0,0,0,0,1,0,0,0],
+[0,1,1,1,1,1,1,0,1,1,1,0]
 ];
 
 const rows = maze.length;
@@ -147,7 +161,7 @@ const cols = maze[0].length;
 canvas.width = cols * tileSize;
 canvas.height = rows * tileSize;
 
-const goal = { x: cols - 1, y: rows - 1 };
+const goal = { x: 7, y: rows - 1 };
 
 let ship;
 let execution;
@@ -216,6 +230,8 @@ function checkVictory() {
     if (nome && nome.trim() !== "") {
       enviarNome(nome.trim());
     }
+	
+	carregarRanking();
   }
 }
 
@@ -300,7 +316,7 @@ function resetGame() {
 
 function carregarRanking() {
 
-  fetch("https://script.google.com/macros/s/AKfycbxnAnaX40UgNuDB_rdx6hxWwCeU9dcXAhYtVa_fnHz3erspR6AItXc4o52id6NyGN6N3g/exec")
+  fetch("https://script.google.com/macros/s/AKfycbwldQViwZ609YbAZOZgTXURUmLiWFCmw9i0bDxSqr1l9tSpZvfaRG1F2u-wlU37_HAR8g/exec")
     .then(res => res.json())
     .then(data => {
 
@@ -314,6 +330,7 @@ function carregarRanking() {
             <td>${item.nome}</td>
             <td>${item.passos}</td>
             <td>${item.conjuntos}</td>
+			<td>${item.escola}</td>
           </tr>
         `;
       });
@@ -341,4 +358,3 @@ draw();
 
 </body>
 </html>
-
